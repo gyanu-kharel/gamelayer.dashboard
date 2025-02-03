@@ -12,6 +12,7 @@ import { Calendar, MessageSquare } from "lucide-react"
 import { UserSelect } from "./user-select"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Task, User } from "./types"
+import { Input } from "../ui/input"
 
 interface TaskDialogProps {
   task: Task | null
@@ -129,6 +130,10 @@ export function TaskDialog({
             </div>
           </div>
           <div className="w-full md:w-64 space-y-6">
+          <div className="space-y-2">
+              <h3 className="font-semibold">Due Date</h3>
+              <Input type="text" value={task.dueDate || "not available"} />
+            </div>
             <div className="space-y-2">
               <h3 className="font-semibold">Assignee</h3>
               <UserSelect users={users} value={task.assignedTo?.id || "unassigned"} onValueChange={onAssignUser} />

@@ -1,7 +1,8 @@
 import Link from "next/link"
-import type React from "react" // Added import for React
-
+import type React from "react"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
+
 
 export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
   return (

@@ -11,6 +11,7 @@ export interface Task {
   status: ColumnType
   priority: "low" | "medium" | "high"
   createdAt: string
+  dueDate: string | null
   assignedTo: User | null
   comments: Comment[]
 }

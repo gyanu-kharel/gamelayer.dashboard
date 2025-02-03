@@ -21,6 +21,7 @@ export function AddTaskDialog({ open, onOpenChange, onAddTask, users, columns }:
   const [status, setStatus] = useState<ColumnType>(columns[0]?.id || "")
   const [priority, setPriority] = useState<Task["priority"]>("medium")
   const [assignedToId, setAssignedToId] = useState<string>("")
+  const [dueDate, setDueDate] = useState<string>("")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,6 +32,7 @@ export function AddTaskDialog({ open, onOpenChange, onAddTask, users, columns }:
       priority,
       assignedTo: users.find((u) => u.id === assignedToId) || null,
       createdAt: new Date().toISOString(),
+      dueDate
     })
     setTitle("")
     setDescription("")
@@ -96,6 +98,10 @@ export function AddTaskDialog({ open, onOpenChange, onAddTask, users, columns }:
           <div className="space-y-2">
             <label className="text-sm font-medium">Assigned To</label>
             <UserSelect users={users} value={assignedToId} onValueChange={setAssignedToId} />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Due Date (optional)</label>
+            <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
           </div>
           <Button type="submit" className="w-full">
             Add Task
