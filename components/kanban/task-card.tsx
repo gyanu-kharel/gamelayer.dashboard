@@ -12,6 +12,7 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, onClick }: TaskCardProps) {
+  console.log(task)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id })
 
   const style = {
@@ -52,12 +53,12 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
           ) : (
             <span className="text-xs text-muted-foreground">Unassigned</span>
           )}
-          {task.comments.length > 0 && (
+          {/* {task.comments.length > 0 && (
             <div className="flex items-center text-muted-foreground">
               <MessageSquare className="w-4 h-4 mr-1" />
               <span className="text-xs">{task.comments.length}</span>
             </div>
-          )}
+          )} */}
         </div>
       </CardContent>
     </Card>

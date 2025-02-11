@@ -1,8 +1,10 @@
+"use client"
+
 import { Boxes, CheckCircle, Users } from "lucide-react"
 import { StatCard } from "@/components/stat-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function DashboardPage() {
+export default function DashboardPage(){
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -30,7 +32,6 @@ export default function DashboardPage() {
             <CardTitle>Task Distribution</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            {/* You can add a chart here showing task distribution across columns */}
           </CardContent>
         </Card>
         <Card className="col-span-3">
@@ -38,7 +39,7 @@ export default function DashboardPage() {
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-8">{/* You can add a list of recent activities here */}</div>
+            <div className="space-y-8"></div>
           </CardContent>
         </Card>
       </div>
