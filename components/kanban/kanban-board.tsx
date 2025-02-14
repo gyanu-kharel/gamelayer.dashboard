@@ -15,7 +15,7 @@ import {
 } from "@dnd-kit/sortable";
 import { KanbanColumn } from "./kanban-column";
 import { TaskDialog } from "./task-dialog";
-import { AddTaskDialog } from "./add-task-dialog";
+import { AddTaskDialog, AddTaskFormData } from "./add-task-dialog";
 import { AddColumnDialog } from "./add-column-dialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -30,80 +30,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { Column, ColumnType, Task, User } from "./types";
-
-// Initial columns data
-const initialColumns: Column[] = [
-  {
-    id: "todo",
-    title: "To Do",
-    tasks: [
-      {
-        id: "1",
-        title: "Research competitors",
-        description: "Analyze top 5 competitors in the market",
-        status: "todo",
-        priority: "high",
-        assignedTo: null,
-        createdAt: new Date().toISOString(),
-        comments: [],
-        dueDate: null
-      },
-      {
-        id: "2",
-        title: "Design system",
-        description: "Create a consistent design system for the application",
-        status: "todo",
-        priority: "medium",
-        assignedTo: null,
-        createdAt: new Date().toISOString(),
-        comments: [],
-        dueDate: null
-      },
-    ],
-  },
-  {
-    id: "in-progress",
-    title: "In Progress",
-    tasks: [
-      {
-        id: "3",
-        title: "User authentication",
-        description: "Implement user authentication and authorization",
-        status: "in-progress",
-        priority: "high",
-        assignedTo: null,
-        createdAt: new Date().toISOString(),
-        comments: [
-          {
-            id: "1",
-            content: "Should we use JWT or session-based auth?",
-            author: "Alice",
-            createdAt: new Date().toISOString(),
-          },
-        ],
-        dueDate: null
-      },
-    ],
-  },
-  {
-    id: "done",
-    title: "Done",
-    tasks: [
-      {
-        id: "4",
-        title: "Project setup",
-        description: "Initialize project and set up development environment",
-        status: "done",
-        priority: "low",
-        assignedTo: null,
-        createdAt: new Date().toISOString(),
-        comments: [],
-        dueDate: null
-      },
-    ],
-  },
-];
+import type {
+  Column,
+  ColumnType,
+  Priority,
+  Task,
+  TaskStatus,
+  User,
+} from "./types";
 
 export function KanbanBoard() {
   const [columns, setColumns] = useState<Column[]>([]);
@@ -116,18 +50,29 @@ export function KanbanBoard() {
   const [columnToDelete, setColumnToDelete] = useState<Column | null>(null);
 
   const [users, setUsers] = useState<User[]>([]);
+  const [priorites, setPriorities] = useState<Priority[]>([]);
+  const [taskStatuses, setTaskStatuses] = useState<TaskStatus[]>([]);
+
+  const [reloadRequired, setReloadRequired] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    loadInitialData();
+  }, [reloadRequired]);
 
-  const fetchUsers = async () => {
+  const loadInitialData = async () => {
     const usersResp = await fetch("/api/users");
+
     setUsers(await usersResp.json());
 
-     const tasksResp = await fetch('/api/tasks');
+    const tasksResp = await fetch("/api/tasks");
 
-     setColumns(await tasksResp.json())
+    setColumns(await tasksResp.json());
+
+    const priorityResp = await fetch("/api/priorities");
+    setPriorities(await priorityResp.json());
+
+    const taskStatusResp = await fetch("/api/task-statuses");
+    setTaskStatuses(await taskStatusResp.json());
   };
 
   const sensors = useSensors(
@@ -220,24 +165,16 @@ export function KanbanBoard() {
     return null;
   };
 
-  const handleAddTask = (newTask: Omit<Task, "id" | "comments">) => {
-    const task: Task = {
-      ...newTask,
-      id: Math.random().toString(36).substr(2, 9),
-      comments: [],
-    };
+  const handleAddTask = async (data: AddTaskFormData) => {
+    const resp = await fetch("/api/tasks/create", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
 
-    setColumns((columns) =>
-      columns.map((col) => {
-        if (col.id === task.title) {
-          return {
-            ...col,
-            tasks: [...col.tasks, task],
-          };
-        }
-        return col;
-      })
-    );
+    if (resp.ok) {
+      setReloadRequired(true);
+      setIsAddTaskDialogOpen(!isAddTaskDialogOpen);
+    }
   };
 
   const handleAddComment = (taskId: string, content: string) => {
@@ -376,7 +313,7 @@ export function KanbanBoard() {
             const user =
               userId === "unassigned"
                 ? null
-                : users.find((u) => u.id === userId) || null;
+                : users.find((u) => u.userid === userId) || null;
             handleUpdateTask(selectedTask.id, { assignedTo: user });
           }
         }}
@@ -392,6 +329,8 @@ export function KanbanBoard() {
         onAddTask={handleAddTask}
         users={users}
         columns={columns}
+        statuses={taskStatuses}
+        priorities={priorites}
       />
       <AddColumnDialog
         open={isAddColumnDialogOpen}

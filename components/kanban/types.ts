@@ -1,7 +1,18 @@
 export interface User {
-  id: string
-  name: string
-  avatar: string
+  userid: string
+  firstname: string
+  lastname: string
+  email: string
+}
+
+export interface Priority {
+  priorityid: number
+  priorityname: string
+}
+
+export interface TaskStatus {
+  statusid: number
+  statusname: string
 }
 
 export interface Task {

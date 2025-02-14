@@ -8,9 +8,11 @@ export async function GET() {
 
     const result = await client.query("SELECT * from Users");
 
-    const tasks = result.rows;
+    const users = result.rows;
 
-    return NextResponse.json(tasks, {
+    console.log(users)
+
+    return NextResponse.json(users, {
       status: 200,
     });
   } catch (err) {
